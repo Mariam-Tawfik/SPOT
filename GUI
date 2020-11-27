@@ -1,0 +1,86 @@
+#include "GUI.h"
+#include "../Courses/Course.h"
+#include "../StudyPlan/AcademicYear.h"
+#include <sstream>
+
+GUI::GUI()
+
+
+void GUI::CreateMenu() const
+{
+	pWind->SetBrush(StatusBarColor);
+	pWind->SetPen(StatusBarColor);
+	pWind->DrawRectangle(0, 0, WindWidth, MenuBarHeight);
+
+	//You can draw the menu icons any way you want.
+
+	//First prepare List of images paths for menu item
+	string MenuItemImages[ITM_CNT];
+	MenuItemImages[ITM_ADD]     = "GUI\\Images\\Menu\\Menu_add_course.jpg";
+	MenuItemImages[ITM_ADD_NOTE] = "GUI\\Images\\Menu\\Add_notes.jpg";
+	MenuItemImages[ITM_LOAD]    = "GUI\\Images\\Menu\\Load_Study.jpg";
+	MenuItemImages[ITM_SAVE]    = "GUI\\Images\\Menu\\Menu_Save.jpg";
+	MenuItemImages[ITM_UNDO]    = "GUI\\Images\\Menu\\Undo.jpg";
+	MenuItemImages[ITM_REDO]     = "GUI\\Images\\Menu\\Menu_redo.jpg";
+	MenuItemImages[ITM_DEL]      =  "GUI\\Images\\Menu\\Delete_Course.jpg";
+	MenuItemImages[ITM_EXIT]     = "GUI\\Images\\Menu\\Menu_exit2.jpg";
+
+	//TODO: Prepare image for each menu item and add it to the list
+
+	//Draw menu items one image at a time
+	for (int i = 0; i<ITM_CNT; i++)
+		pWind->DrawImage(MenuItemImages[i], i*MenuItemWidth, 0, MenuItemWidth, MenuBarHeight);
+}
+
+////////////////////////    Drawing functions    ///////////////////
+void GUI::DrawCourse(const Course* pCrs)
+{
+	if (pCrs->isSelected())
+		pWind->SetPen(HiColor, 1);
+	else
+	pWind->SetPen(DrawColor, 2);
+	pWind->SetBrush(FillColor);
+	graphicsInfo gInfo = pCrs->getGfxInfo();
+	pWind->DrawRectangle(gInfo.x, gInfo.y, gInfo.x + CRS_WIDTH, gInfo.y + CRS_HEIGHT);
+	//pWind->DrawLine(gInfo.x, gInfo.y + CRS_HEIGHT / 2, gInfo.x + CRS_WIDTH, gInfo.y + CRS_HEIGHT / 2);
+	
+	//Write the course code and credit hours.
+	int Code_x = gInfo.x + CRS_WIDTH * 0.2;
+	int Code_y = gInfo.y + CRS_HEIGHT * 0.07;
+	pWind->SetFont(CRS_HEIGHT * 0.5, BOLD , BY_NAME, "Gramound");
+	pWind->SetPen(MsgColor);
+
+	ostringstream crd;
+	//crd<< "crd:" << pCrs->getCredits();
+	pWind->DrawString(Code_x, Code_y, pCrs->getCode());
+	//pWind->DrawString(Code_x, Code_y + CRS_HEIGHT/2, crd.str());
+}
+
+void GUI::DrawAcademicYear(const AcademicYear* pY) 
+{
+	graphicsInfo gInfo = pY->getGfxInfo();
+
+	///TODO: compelete this function to:
+	//		1- Draw a rectangle for the academic year 
+	pWind->SetBrush(BACKGROUND_RED);
+	pWind->SetPen(BLACK,2);
+	for (int i = 0; i < 15; ++i) {
+		pWind->SetPen(BLACK);
+		pWind->DrawRectangle(4, WindHeight - StatusBarHeight - 6 - YearHeight * i, YearWidth, (WindHeight - StatusBarHeight - YearHeight - YearHeight * i)-2, FRAME, 7, 7);
+		pWind->SetFont(15,1,ROMAN);
+		pWind->DrawString(4+YearWidth/6, WindHeight - StatusBarHeight - 6 - YearHeight * i-15," YEAR 1"); //for testing
+		pWind->SetPen(SKYBLUE);
+		pWind->DrawLine(0, WindHeight - StatusBarHeight - 6 - YearHeight * i - 0.5, WindWidth-150, WindHeight - StatusBarHeight - 6 - YearHeight * i - 0.5);
+		pWind->SetPen(STEELBLUE, 2);
+		if (i % 3 == 0) {
+			pWind->DrawLine(0, WindHeight - StatusBarHeight - 8 - YearHeight * i, WindWidth-150, WindHeight - StatusBarHeight - 8 - YearHeight * i);
+		}
+	}
+
+	
+}
+
+GUI::~GUI()
+{
+	delete pWind;
+}
