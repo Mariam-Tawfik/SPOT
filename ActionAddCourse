@@ -1,0 +1,93 @@
+#include "ActionAddCourse.h"
+#include "..\Registrar.h"
+#include "../Courses/UnivCourse.h"
+#include <fstream>
+#include <iostream>
+#include <string>
+#include<sstream>
+using namespace std;
+ActionAddCourse::ActionAddCourse(Registrar* p):Action(p)
+{
+}
+
+bool ActionAddCourse::Execute()
+{
+	GUI* pGUI = pReg->getGUI();	
+	
+	pGUI->PrintMsg("Add Course to plan: Enter course Code(e.g. CIE202):");
+	Course_Code code = pGUI->GetSrting();
+	int crd;
+	string courseTitle;
+	int i = 0;
+	//TODO: add input validation
+
+
+	ActionData actData = pGUI->GetUserAction("Select a year to add coures to:(To be implemented in phase1) we will just draw coures where user clicks");
+	//TODO: add input validation
+
+	int x, y;
+	if (actData.actType == DRAW_AREA)	//user clicked inside drawing area
+	{
+		//get coord where user clicked
+		x = actData.x;
+		y = actData.y;
+		graphicsInfo gInfo{ x, y };
+		
+
+		//TODO: given course code, get course title, crd hours from registrar
+		ifstream file;
+		file.open("D:\\CIE-year 2\\CIE 202 _C++\\Lab\\read.txt");
+		string str;
+		string cCode="";
+		string str3="";
+		while (getline(file, str))
+		{
+			i = 0;
+			while (str[i] != ',')
+			{
+				cCode = cCode + str[i];
+				++i;
+			}
+
+			if (cCode == code)
+			{
+
+				i = i + 1;
+				while (str[i] != ',')
+				{
+					courseTitle =courseTitle +str[i];
+					++i;
+				}
+				++i;
+				while (str[i] != ',')
+				{
+					str3 = str3 + str[i];
+					i = i + 1;
+				}
+				stringstream g(str3);
+				g >> crd;
+				break;
+			}
+
+		}
+		file.close();
+		Course* pC = new Course(code, courseTitle, crd);
+		pC->setGfxInfo(gInfo);
+
+		//TODO: Ask registrar to add course to the year selected by the user
+		//TODO: add the course to the correct year obtained from registrar
+		StudyPlan* pS = pReg->getStudyPlay();
+		pS->AddCourse(pC, 1, FALL);
+	}
+
+	
+	//TODO:
+	
+
+	return true;
+}
+
+
+ActionAddCourse::~ActionAddCourse()
+{
+}
